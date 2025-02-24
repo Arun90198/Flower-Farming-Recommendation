@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Farming Recommendation</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: left; 
+            margin: 0; 
+            padding: 20px; 
+            background-color: #f8f9fa; 
+        }
+        .container { 
+            max-width: 800px; 
+            margin: auto; 
+            padding: 20px; 
+            background: white; 
+            border-radius: 10px; 
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); 
+        }
+        h2, h3, h4 { text-align: center; }
+        .center-buttons { text-align: center; margin-top: 20px; }
+        button { 
+            margin: 10px; 
+            padding: 10px 15px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 16px;
+        }
+        .print-btn { background-color: #4CAF50; color: white; }
+        .pdf-btn { background-color: #007BFF; color: white; }
+        ul { padding-left: 20px; }
+        a { 
+            display: block; 
+            text-align: center; 
+            margin-top: 20px; 
+            text-decoration: none; 
+            color: #007BFF; 
+            font-weight: bold; 
+        }
+        .section {
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Flower Farming Recommendation</h2>
+        <h3>
+            {{ result.farm_type | default("Unknown Farm Type") }} 
+            {% if result.farm_type == "Complete Farm" %}
+                - {{ result.flower_name | default("Unknown Flower") }} ({{ result.area_acres | default(0) }} acres)
+            {% else %}
+                - Division Farm ({{ result.area_acres | default(0) }} acre each division)
+            {% endif %}
+        </h3>
+        
+        
+        {% if result.farm_type == "Complete Farm" %}
+    <div class="section">
+        <h4>Soil Nutrient Deficiencies</h4>
+        {% if result.deficit and result.deficit|length > 0 %}
+            <ul>
+                {% for key, value in result.deficit.items() %}
+                    <li><strong>{{ key }}:</strong> Deficiency of {{ value|round(2) }} g/m²</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No significant deficiencies detected.</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h4>Recommended Fertilizers</h4>
+        <ul>
+            {% if result.fertilizer_recommendation == "Soil fertility is good" %}
+                <li>{{ result.fertilizer_recommendation }}</li>
+            {% elif result.fertilizer_recommendation %}
+                {% for key, fert in result.fertilizer_recommendation.items() %}
+                    <li><strong>{{ fert.fertilizer }}</strong>: {{ fert.amount_kg }} kg</li>
+                {% endfor %}
+            {% else %}
+                <p>No fertilizers recommended.</p>
+            {% endif %}
+        </ul>
+        <p style="color: red; font-weight: bold;">
+            ⚠️ Urea: Apply in split doses (half at planting, half after 3-4 weeks).<br>
+            ⚠️ SSP: Apply at planting as it releases phosphorus slowly.<br>
+            ⚠️ MOP: Apply before or at planting, preferably mixed with soil.
+        </p>
+    </div>
+
+    <div class="section">
+        <h4>Market & Farming Information</h4>
+        <p><strong>Market Demand:</strong> {{ result.market_demand | default("No data available") }}</p>
+        <p><strong>Average Price:</strong> ₹{{ result.avg_price | default(0) }} per Kg</p>
+        <p><strong>Flowering Duration:</strong> {{ result.flowering_duration | default("Unknown") }}</p>
+
+        <h4>Farming Details</h4>
+        <p><strong>Farming Type:</strong> {{ result.farming_type | default("Unknown") }}</p>
+        <p><strong>Irrigation Method:</strong> {{ result.irrigation | default("Unknown") }}</p>
+        <p><strong>Harvesting Method:</strong> {{ result.harvesting | default("Unknown") }}</p>
+    </div>
+
+{% elif result.division_results %}
+    <h3>Division-wise Recommendations</h3>
+    {% for division, data in result.division_results.items() %}
+        <div class="section">
+            <h4>{{ division }} - {{ data.flower_name | default("Unknown Flower") }}</h4>
+
+            <h4>Soil Nutrient Deficiencies</h4>
+            {% if data.deficit and data.deficit|length > 0 %}
+                <ul>
+                    {% for key, value in data.deficit.items() %}
+                        <li><strong>{{ key }}:</strong> Deficiency of {{ value|round(2) }} g/m²</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No significant deficiencies detected in this section.</p>
+            {% endif %}
+
+            <h4>Recommended Fertilizers</h4>
+            <ul>
+                {% if data.fertilizer_recommendation == "Soil fertility is good" %}
+                    <li>{{ data.fertilizer_recommendation }}</li>
+                {% elif data.fertilizer_recommendation %}
+                    {% for key, fert in data.fertilizer_recommendation.items() %}
+                        <li><strong>{{ fert.fertilizer }}</strong>: {{ fert.amount_kg }} kg</li>
+                    {% endfor %}
+                {% else %}
+                    <p>No fertilizers recommended.</p>
+                {% endif %}
+            </ul>
+            <p style="color: red; font-weight: bold;">
+                ⚠️ Urea: Apply in split doses (half at planting, half after 3-4 weeks).<br>
+                ⚠️ SSP: Apply at planting as it releases phosphorus slowly.<br>
+                ⚠️ MOP: Apply before or at planting, preferably mixed with soil.
+            </p>
+
+            <h4>Market & Farming Information</h4>
+            <p><strong>Market Demand:</strong> {{ data.market_demand | default("No data available") }}</p>
+            <p><strong>Average Price:</strong> ₹{{ data.avg_price | default(0) }} per Kg</p>
+            <p><strong>Flowering Duration:</strong> {{ data.flowering_duration | default("Unknown") }}</p>
+
+            <h4>Farming Details</h4>
+            <p><strong>Farming Type:</strong> {{ data.farming_type | default("Unknown") }}</p>
+            <p><strong>Irrigation Method:</strong> {{ data.irrigation | default("Unknown") }}</p>
+            <p><strong>Harvesting Method:</strong> {{ data.harvesting | default("Unknown") }}</p>
+        </div>
+    {% endfor %}
+{% endif %}
+
+        
+
+        <div class="center-buttons">
+            <button class="print-btn" onclick="window.print()">Print</button>
+            <form action="/download_pdf" method="POST" style="display: inline;">
+                <input type="hidden" name="recommendation" value='{{ result | tojson | safe }}'>
+                <button class="pdf-btn" type="submit">Download as PDF</button>
+            </form>
+        </div>
+
+        <a href="/">Go Back</a>
+    </div>
+</body>
+</html>

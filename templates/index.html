@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flower Farming Recommendation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="card shadow-lg p-4">
+            <h2 class="text-center mb-4">Flower Farming Recommendation</h2>
+            <form action="/recommend" method="post">
+                <div class="mb-3">
+                    <div class="mb-3">
+                        <label class="form-label">Farm Area (acres):</label>
+                        <input type="number" step="0.1" class="form-control" name="area">
+                    </div>
+                    <label class="form-label">Select Farm Type:</label>
+                    <select class="form-select" name="farm_type" required id="farmType">
+                        <option value="" disabled selected>Select Farm Type</option>
+                        <option value="complete">Complete Farm</option>
+                        <option value="division">Division Farm</option>
+                    </select>
+                </div>
+                
+                <div id="completeFarm" class="farm-section">
+                    <div class="mb-3">
+                        <label class="form-label">Flower Name:</label>
+                        <select class="form-select" name="flower_name">
+                            <option value="Rose">Rose</option>
+                            <option value="Chrysanthemum">Chrysanthemum</option>
+                            <option value="Marigold">Marigold</option>
+                            <option value="Tuberose">Tuberose</option>
+                            <option value="Gladiolus">Gladiolus</option>
+                            <option value="Crossandra">Crossandra</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nitrogen (N) in g/m²:</label>
+                        <input type="number" step="0.1" class="form-control" name="n">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phosphorus (P) in g/m²:</label>
+                        <input type="number" step="0.1" class="form-control" name="p">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Potassium (K) in g/m²:</label>
+                        <input type="number" step="0.1" class="form-control" name="k">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Soil pH (0-14):</label>
+                        <input type="number" step="0.1" class="form-control" name="ph" min="0" max="14">
+                    </div>
+                    
+                </div>
+                
+                <div id="divisionFarm" class="farm-section" style="display: none;">
+                    <p><strong>Enter data for each division (NE, NW, SW, SE)</strong></p>
+                    
+                    
+                    {% for section in ["NE", "NW", "SW", "SE"] %}
+                        <h4>{{ section }} Division</h4>
+                        <div class="mb-3">
+                            <label class="form-label">Flower Name:</label>
+                            <select class="form-select" name="flower_name_{{ section }}">
+                                <option value="Rose">Rose</option>
+                                <option value="Chrysanthemum">Chrysanthemum</option>
+                                <option value="Marigold">Marigold</option>
+                                <option value="Tuberose">Tuberose</option>
+                                <option value="Gladiolus">Gladiolus</option>
+                                <option value="Crossandra">Crossandra</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nitrogen (N) in g/m²:</label>
+                            <input type="number" step="0.1" class="form-control" name="n_{{ section }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phosphorus (P) in g/m²:</label>
+                            <input type="number" step="0.1" class="form-control" name="p_{{ section }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Potassium (K) in g/m²:</label>
+                            <input type="number" step="0.1" class="form-control" name="k_{{ section }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Soil pH (0-14):</label>
+                            <input type="number" step="0.1" class="form-control" name="ph_{{ section }}" min="0" max="14">
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Get Recommendation</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.getElementById("farmType").addEventListener("change", function() {
+            document.getElementById("completeFarm").style.display = this.value === "complete" ? "block" : "none";
+            document.getElementById("divisionFarm").style.display = this.value === "division" ? "block" : "none";
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
